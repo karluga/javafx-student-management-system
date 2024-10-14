@@ -15,16 +15,13 @@ public class MainController {
     @FXML
     private MenuBar menuBar;
 
-    private StudentManager studentManager;
+    private CourseManager courseManager;  // Add CourseManager reference
 
     @FXML
     public void initialize() {
-        studentManager = new StudentManager();
-        for (Student student : studentManager.getStudents()) {
-            if (!courseListView.getItems().contains(student.getCourse())) {
-                courseListView.getItems().add(student.getCourse());
-            }
-        }
+        courseManager = new CourseManager();
+        // Load courses from courses.json into the ListView
+        courseListView.getItems().addAll(courseManager.getCourses());
     }
 
     @FXML

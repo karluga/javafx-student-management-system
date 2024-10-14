@@ -30,7 +30,7 @@ public class AdminController {
     private TextField idField;
 
     @FXML
-    private ComboBox<String> courseDropdown;  // Add dropdown for course selection
+    private ComboBox<String> courseDropdown;
 
     private StudentManager studentManager;
     private CourseManager courseManager;
@@ -55,25 +55,28 @@ public class AdminController {
     protected void onAddStudentClick() {
         String name = nameField.getText();
         String id = idField.getText();
-        String course = courseDropdown.getSelectionModel().getSelectedItem();  // Get selected course
-        if (name.isEmpty() || id.isEmpty() || course == null) {
-            // Ensure all fields are filled
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Missing Information");
-            alert.setHeaderText("All fields must be filled.");
+        String course = courseDropdown.getSelectionModel().getSelectedItem();
+
+        try {
+            validateStudentData(name, id, course); // Validate inputs
+
+            // Create and add student
+            Student student = new Student(name, id, course, new HashMap<>());
+            studentManager.addStudent(student);
+            studentTable.getItems().add(student);
+
+            // Clear fields after adding
+            nameField.clear();
+            idField.clear();
+            courseDropdown.getSelectionModel().clearSelection();
+
+        } catch (InvalidStudentDataException e) {
+            // Display error message to the user
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Invalid Data");
+            alert.setHeaderText(e.getMessage());
             alert.showAndWait();
-            return;
         }
-
-        // Create and add student
-        Student student = new Student(name, id, course, new HashMap<>());
-        studentManager.addStudent(student);
-        studentTable.getItems().add(student);
-
-        // Clear fields after adding
-        nameField.clear();
-        idField.clear();
-        courseDropdown.getSelectionModel().clearSelection();
     }
 
     @FXML
@@ -82,6 +85,24 @@ public class AdminController {
         if (selectedStudent != null) {
             studentManager.deleteStudent(selectedStudent.getId());
             studentTable.getItems().remove(selectedStudent);
+        } else {
+            // Show an error dialog if no student is selected
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No Selection");
+            alert.setHeaderText("No Student Selected");
+            alert.setContentText("Please select a student to delete.");
+            alert.showAndWait();
+        }
+    }
+
+    // Validate student name, ID, and course
+    private void validateStudentData(String name, String id, String course) throws InvalidStudentDataException {
+        if (name.isEmpty() || id.isEmpty() || course == null) {
+            throw new InvalidStudentDataException("All fields must be filled.");
+        }
+        // Validate ID format (2-3 letters followed by 5 digits)
+        if (!id.matches("^[A-Za-z]{2,3}\\d{5}$")) {
+            throw new InvalidStudentDataException("Student ID must start with 2-3 letters and end with 5 digits.");
         }
     }
 }

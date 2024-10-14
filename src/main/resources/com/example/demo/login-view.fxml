@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Label?>
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.demo.LoginController" alignment="CENTER" spacing="10">
+    <Label text="Admin Login" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
     <PasswordField fx:id="passwordField" promptText="Enter Admin Password"/>
     <Button text="Login" onAction="#onLoginButtonClick"/>
     <Label fx:id="errorLabel"/>
